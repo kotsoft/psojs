@@ -7,22 +7,19 @@ PSO.Swarm = function(numParticles, numParams, options) {
   options = options || {};
   this.min = options.min || -1;
   this.max = options.max || 1;
+  this.velocityMultiplier = options.velocityMultiplier || .1;
   this.springCoefficient = options.springCoefficient || .25;
   this.bounceCoefficient = options.bounceCoefficient || .25;
   this.inertia = options.inertia || .9;
-  this.enableJittering = options.enableJittering || true
+  this.enableJitter = options.enableJitter || false
   this.jitterRatio = options.jitterRatio || .01;
   this.fitnessCompare = options.fitnessCompare || function(a, b) {
     return a < b;
   };
   
   this.range = this.max - this.min;
-  this.velocityRange = this.range * .5;
+  this.velocityRange = this.velocityMultiplier * this.range;
   this.numJitters = Math.ceil(this.jitterRatio * numParticles * numParams);
-
-  this.paramsBest;
-  this.fitnessBest;
-  this.hasHistory = false;
   
   this.particles = new Array(numParticles);
   
@@ -34,29 +31,28 @@ PSO.Swarm = function(numParticles, numParams, options) {
 PSO.Swarm.prototype = {
   update: function() {
     // Find the global best
-    var globalBest = this.particles[0];
+    var globalBest = this.particles[parseInt(Math.random() * this.numParticles)];
     
-    for (var i = 1; i < this.numParticles; i++) {
+    for (var i in this.particles) {
       if (this.fitnessCompare(this.particles[i].fitnessCurrent, globalBest.fitnessCurrent)) {
         globalBest = this.particles[i];
       }
     }
 
-    if (globalBest != null && (!this.hasHistory || this.fitnessCompare(globalBest.fitnessCurrent, this.fitnessBest))) {
+    if (globalBest.fitnessCurrent != null && (!this.hasHistory || this.fitnessCompare(globalBest.fitnessCurrent, this.fitnessBest))) {
       this.hasHistory = true;
       this.fitnessBest = globalBest.fitnessCurrent;
       this.paramsBest = globalBest.paramsBest;
-      console.log(globalBest.fitness)
     }
     
     // Update particles
-    for (var i = 0; i < this.numParticles; i++) {
+    for (var i in this.particles) {
       this.particles[i].update(globalBest);
     }
     
     // Jitter
-    if (this.enableJittering) {
-      for (var i = 0; i < this.numJitters; i++) {
+    if (this.enableJitter) {
+      for (var i in this.particles) {
         var randomIndex = parseInt(Math.random() * this.numParticles);
         this.particles[randomIndex].jitter();
       }
@@ -93,12 +89,12 @@ PSO.Particle.prototype = {
     if (!this.hasHistory || swarm.fitnessCompare(this.fitnessCurrent, this.fitnessBest)) {
       this.hasHistory = true;
       this.fitnessBest = this.fitnessCurrent;
-      for (var i = 0; i < swarm.numParams; i++) {
+      for (var i in this.params) {
         this.paramsBest[i] = this.params[i];
       }
     }
     
-    for (var i = 0; i < swarm.numParams; i++) {
+    for (var i in this.params) {
       var globalDiff = globalBest.params[i] - this.params[i];
       var localDiff = this.paramsBest[i] - this.params[i];
       
