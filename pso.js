@@ -68,6 +68,9 @@ PSO.Particle = function(swarm) {
 };
 
 PSO.Particle.prototype = {
+  setFitness: function(fitness) {
+    this.fitnessCurrent = fitness;
+  },
   update: function(globalBest) {
     var swarm = this.swarm;
     
@@ -91,10 +94,8 @@ PSO.Particle.prototype = {
       
       // Bounce off boundaries
       if (this.params[i] > swarm.max) {
-        this.params[i] = swarm.max;
         this.velocities[i] += swarm.bounceCoefficient * (swarm.max - this.params[i]);
       } else if (this.params[i] < swarm.min) {
-        this.params[i] = swarm.min;
         this.velocities[i] += swarm.bounceCoefficient * (swarm.min - this.params[i]);
       }
     }
