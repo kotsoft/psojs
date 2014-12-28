@@ -10,6 +10,7 @@ PSO.Swarm = function(numParticles, numParams, options) {
   this.springCoefficient = options.springCoefficient || .25;
   this.bounceCoefficient = options.bounceCoefficient || .25;
   this.inertia = options.inertia || .9;
+  this.enableJittering = options.enableJittering || true
   this.jitterRatio = options.jitterRatio || .01;
   this.fitnessCompare = options.fitnessCompare || function(a, b) {
     return a < b;
@@ -18,6 +19,10 @@ PSO.Swarm = function(numParticles, numParams, options) {
   this.range = this.max - this.min;
   this.velocityRange = this.range * .5;
   this.numJitters = Math.ceil(this.jitterRatio * numParticles * numParams);
+
+  this.paramsBest;
+  this.fitnessBest;
+  this.hasHistory = false;
   
   this.particles = new Array(numParticles);
   
@@ -32,9 +37,16 @@ PSO.Swarm.prototype = {
     var globalBest = this.particles[0];
     
     for (var i = 1; i < this.numParticles; i++) {
-      if (this.fitnessCompare(this.particles[i].fitness, globalBest.fitness)) {
+      if (this.fitnessCompare(this.particles[i].fitnessCurrent, globalBest.fitnessCurrent)) {
         globalBest = this.particles[i];
       }
+    }
+
+    if (globalBest != null && (!this.hasHistory || this.fitnessCompare(globalBest.fitnessCurrent, this.fitnessBest))) {
+      this.hasHistory = true;
+      this.fitnessBest = globalBest.fitnessCurrent;
+      this.paramsBest = globalBest.paramsBest;
+      console.log(globalBest.fitness)
     }
     
     // Update particles
@@ -43,9 +55,11 @@ PSO.Swarm.prototype = {
     }
     
     // Jitter
-    for (var i = 0; i < this.numJitters; i++) {
-      //var randomIndex = parseInt(Math.random() * this.numParticles);
-      //this.particles[randomIndex].jitter();
+    if (this.enableJittering) {
+      for (var i = 0; i < this.numJitters; i++) {
+        var randomIndex = parseInt(Math.random() * this.numParticles);
+        this.particles[randomIndex].jitter();
+      }
     }
   }
 }
