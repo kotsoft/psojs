@@ -44,8 +44,8 @@ PSO.Swarm.prototype = {
     
     // Jitter
     for (var i = 0; i < this.numJitters; i++) {
-      var randomIndex = parseInt(Math.random() * this.numParticles);
-      this.particles[randomIndex].jitter();
+      //var randomIndex = parseInt(Math.random() * this.numParticles);
+      //this.particles[randomIndex].jitter();
     }
   }
 }
