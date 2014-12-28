@@ -9,6 +9,7 @@ PSO.Swarm = function(numParticles, numParams, options) {
   this.max = options.max || 1;
   this.springCoefficient = options.springCoefficient || .25;
   this.bounceCoefficient = options.bounceCoefficient || .25;
+  this.inertia = options.inertia || .9;
   this.jitterRatio = options.jitterRatio || .01;
   this.fitnessCompare = options.fitnessCompare || function(a, b) {
     return a < b;
@@ -89,7 +90,8 @@ PSO.Particle.prototype = {
       
       // Accelerate towards global and historical bests
       this.velocities[i] += swarm.springCoefficient * (Math.random() * globalDiff + Math.random() * localDiff);
-      
+      this.velocities[i] *= swarm.inertia;
+
       this.params[i] += this.velocities[i];
       
       // Bounce off boundaries
