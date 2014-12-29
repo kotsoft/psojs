@@ -5,6 +5,8 @@ pso.js
 
 **pso.js** aims to be a clean and tiny implementation of [Particle Swarm Optimization](http://en.wikipedia.org/wiki/Particle_swarm_optimization). I am currently using it in my neural network library to optimize weights. However, it's flexible enough to be used in many different kinds of optimization problems.
 
+Check out [my blog post on CodePen](http://codepen.io/kotsoft/blog/psodemos) to see two examples on how this library can be used.
+
 Usage
 -----
 Creating a swarm is simple. All you need to do is specify the number of particles and the number of parameters you want to optimize. The last argument is the options hash.
